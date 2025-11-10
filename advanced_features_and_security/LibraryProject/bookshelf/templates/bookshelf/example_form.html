@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Form - Library Management</title>
+    <style>
+        .error { color: red; font-size: 0.9em; }
+        .success { color: green; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            box-sizing: border-box;
+        }
+        button { 
+            background: #007bff; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        button:hover { background: #0056b3; }
+        .form-control { width: 100%; }
+    </style>
+</head>
+<body>
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1>Example Contact Form</h1>
+        <p>This form demonstrates secure form handling practices in Django.</p>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Security: CSRF Token Protection -->
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="error">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="error">
+                        {% for error in form.name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="error">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.age.id_for_label }}">{{ form.age.label }}</label>
+                {{ form.age }}
+                {% if form.age.errors %}
+                    <div class="error">
+                        {% for error in form.age.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+                {{ form.message }}
+                {% if form.message.errors %}
+                    <div class="error">
+                        {% for error in form.message.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small style="color: #666;">Maximum 500 characters</small>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    {{ form.agree_to_terms }}
+                    {{ form.agree_to_terms.label }}
+                </label>
+                {% if form.agree_to_terms.errors %}
+                    <div class="error">
+                        {% for error in form.agree_to_terms.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit">Submit Form</button>
+        </form>
+
+        <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 4px;">
+            <h3>Security Features Demonstrated:</h3>
+            <ul>
+                <li>CSRF Token Protection</li>
+                <li>Input Validation and Sanitization</li>
+                <li>Character Whitelist Validation</li>
+                <li>Input Length Restrictions</li>
+                <li>Cross-field Validation</li>
+                <li>Secure Error Handling</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
