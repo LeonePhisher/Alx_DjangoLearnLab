@@ -43,6 +43,10 @@ MIDDLEWARE = [
     # Security: Content Security Policy middleware
     'csp.middleware.CSPMiddleware',
     
+    # Custom security middleware
+    'bookshelf.middleware.HTTPSRedirectMiddleware',
+    'bookshelf.middleware.SecurityHeadersMiddleware',
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -241,3 +245,4 @@ if DEBUG:
 else:
     # Production security enforcement
     print("SECURITY: Production mode enabled. All security settings are active.")
+
