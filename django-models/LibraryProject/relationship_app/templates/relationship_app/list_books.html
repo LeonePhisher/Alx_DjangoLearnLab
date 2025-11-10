@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Books</title>
+    <style>
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .book-list { list-style: none; padding: 0; }
+        .book-item { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .book-actions { margin-top: 10px; }
+        .btn { padding: 5px 10px; text-decoration: none; border-radius: 3px; font-size: 14px; }
+        .btn-edit { background: #007bff; color: white; }
+        .btn-delete { background: #dc3545; color: white; }
+        .btn-add { background: #28a745; color: white; padding: 10px 15px; }
+        .nav { margin-bottom: 20px; }
+        .nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            {% if user.is_authenticated %}
+                Welcome, {{ user.username }}! 
+                <a href="{% url 'relationship_app:logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'relationship_app:login' %}">Login</a> | 
+                <a href="{% url 'relationship_app:register' %}">Register</a>
+            {% endif %}
+        </div>
+        
+        <div class="header">
+            <h1>Books Available:</h1>
+            {% if perms.relationship_app.can_add_book %}
+                <a href="{% url 'relationship_app:add_book' %}" class="btn btn-add">Add New Book</a>
+            {% endif %}
+        </div>
+        
+        <ul class="book-list">
+            {% for book in books %}
+            <li class="book-item">
+                <h3>{{ book.title }}</h3>
+                <p><strong>Author:</strong> {{ book.author.name }}</p>
+                <p><strong>Published:</strong> {{ book.publication_year }}</p>
+                <p><strong>Available in:</strong> 
+                    {% for library in book.libraries.all %}
+                        {{ library.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                
+                <div class="book-actions">
+                    {% if perms.relationship_app.can_change_book %}
+                        <a href="{% url 'relationship_app:edit_book' book.pk %}" class="btn btn-edit">Edit</a>
+                    {% endif %}
+                    {% if perms.relationship_app.can_delete_book %}
+                        <a href="{% url 'relationship_app:delete_book' book.pk %}" class="btn btn-delete">Delete</a>
+                    {% endif %}
+                </div>
+            </li>
+            {% empty %}
+            <li>No books available.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
