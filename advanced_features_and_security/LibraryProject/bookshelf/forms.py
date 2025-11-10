@@ -1,11 +1,116 @@
 """
 Secure forms with input validation and sanitization.
+Includes ExampleForm as required.
 """
 
 from django import forms
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from .models import Book, BorrowRecord
+
+class ExampleForm(forms.Form):
+    """
+    Example form demonstrating secure form practices with various field types.
+    This form showcases proper input validation and security measures.
+    """
+    name = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your name'
+        }),
+        validators=[
+            RegexValidator(
+                regex='^[a-zA-Z\s\-\.]+$',
+                message='Name can only contain letters, spaces, hyphens, and periods.'
+            )
+        ]
+    )
+    
+    email = forms.EmailField(
+        max_length=150,
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your email'
+        })
+    )
+    
+    message = forms.CharField(
+        required=True,
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'class': 'form-control',
+            'placeholder': 'Enter your message',
+            'maxlength': '500'  # Security: Limit input size
+        }),
+        validators=[
+            RegexValidator(
+                regex='^[a-zA-Z0-9\s\-\.\,\!\?\(\)\:\;\'\"]+$',
+                message='Message contains invalid characters.'
+            )
+        ]
+    )
+    
+    age = forms.IntegerField(
+        required=False,
+        min_value=0,
+        max_value=150,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your age'
+        })
+    )
+    
+    agree_to_terms = forms.BooleanField(
+        required=True,
+        label='I agree to the terms and conditions'
+    )
+    
+    def clean_name(self):
+        """Security: Additional name validation"""
+        name = self.cleaned_data.get('name', '').strip()
+        if len(name) < 2:
+            raise ValidationError("Name must be at least 2 characters long.")
+        
+        # Security: Check for potentially malicious patterns
+        suspicious_patterns = ['<script>', 'javascript:', 'onload=', 'onerror=']
+        for pattern in suspicious_patterns:
+            if pattern in name.lower():
+                raise ValidationError("Invalid characters in name.")
+        
+        return name
+    
+    def clean_message(self):
+        """Security: Message content validation"""
+        message = self.cleaned_data.get('message', '').strip()
+        if len(message) < 10:
+            raise ValidationError("Message must be at least 10 characters long.")
+        
+        # Security: Prevent excessively long words (potential DoS)
+        words = message.split()
+        for word in words:
+            if len(word) > 50:
+                raise ValidationError("Message contains words that are too long.")
+        
+        return message
+    
+    def clean(self):
+        """Security: Cross-field validation"""
+        cleaned_data = super().clean()
+        name = cleaned_data.get('name')
+        age = cleaned_data.get('age')
+        
+        # Example of cross-field validation
+        if age and age < 18 and name:
+            # Security: Log potential underage submissions
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Underage form submission from: {name}")
+        
+        return cleaned_data
+
 
 class BookForm(forms.ModelForm):
     """
