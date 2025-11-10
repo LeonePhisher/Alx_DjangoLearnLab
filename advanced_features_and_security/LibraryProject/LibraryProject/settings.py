@@ -1,5 +1,5 @@
 """
-Django settings for LibraryProject with enhanced security configurations.
+Django settings for LibraryProject with enhanced HTTPS and security configurations.
 """
 
 import os
@@ -9,13 +9,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-in-production')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Security: DEBUG set to False for production, can be overridden by environment variable
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
-# Security: Define allowed hosts for production security
+# Security: Define allowed hosts for production
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
@@ -41,16 +40,16 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # Security: Content Security Policy middleware (Step 4)
+    # Security: Content Security Policy middleware
     'csp.middleware.CSPMiddleware',
     
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',  # CSRF protection
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Clickjacking protection
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -117,33 +116,50 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
-# ==================== SECURITY SETTINGS ====================
+# ==================== HTTPS AND SECURITY SETTINGS ====================
 
 # Security: HTTPS Settings (Step 1)
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True  # Redirect all HTTP to HTTPS
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_SSL_REDIRECT: Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = not DEBUG  # Enable in production only
 
-# Security: Cookie Settings (Step 1)
-SESSION_COOKIE_SECURE = not DEBUG  # Send session cookies over HTTPS only
-CSRF_COOKIE_SECURE = not DEBUG     # Send CSRF cookies over HTTPS only
+# Security: Proxy SSL Header - Required when behind a reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Security: HTTP Strict Transport Security (HSTS) (Step 1)
+# SECURE_HSTS_SECONDS: Enable HSTS with 1-year duration in production
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
+    # SECURE_HSTS_INCLUDE_SUBDOMAINS: Apply HSTS to all subdomains
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    # SECURE_HSTS_PRELOAD: Allow preloading in browser HSTS lists
+    SECURE_HSTS_PRELOAD = True
+else:
+    # Disable HSTS in development to avoid browser caching issues
+    SECURE_HSTS_SECONDS = 0
+
+# Security: Cookie Settings (Step 2)
+# SESSION_COOKIE_SECURE: Ensure session cookies are only sent over HTTPS
+SESSION_COOKIE_SECURE = not DEBUG
+# CSRF_COOKIE_SECURE: Ensure CSRF cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = not DEBUG
+# Additional cookie security settings
 SESSION_COOKIE_HTTPONLY = True     # Prevent JavaScript access to session cookie
 CSRF_COOKIE_HTTPONLY = False       # Allow JavaScript to read CSRF token (needed for AJAX)
 SESSION_COOKIE_SAMESITE = 'Lax'    # CSRF protection
 CSRF_COOKIE_SAMESITE = 'Lax'
 
-# Security: Browser Protection Headers (Step 1)
-SECURE_BROWSER_XSS_FILTER = True   # Enable XSS filter in browsers
-X_FRAME_OPTIONS = 'DENY'           # Prevent clickjacking
-SECURE_CONTENT_TYPE_NOSNIFF = True # Prevent MIME type sniffing
+# Security: Browser Protection Headers (Step 3)
+# X_FRAME_OPTIONS: Prevent clickjacking by denying framing
+X_FRAME_OPTIONS = 'DENY'
+# SECURE_CONTENT_TYPE_NOSNIFF: Prevent MIME type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_BROWSER_XSS_FILTER: Enable browser XSS filtering
+SECURE_BROWSER_XSS_FILTER = True
 
-# Security: HSTS Settings (only in production)
-if not DEBUG:
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+# Security: Additional security headers
+SECURE_REFERRER_POLICY = 'same-origin'
 
-# Security: Content Security Policy (CSP) - Step 4
+# Security: Content Security Policy (CSP)
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)  # Only allow scripts from same origin
 CSP_STYLE_SRC = ("'self'",)   # Only allow styles from same origin
@@ -153,9 +169,6 @@ CSP_OBJECT_SRC = ("'none'",)  # No Flash/Java applets
 CSP_BASE_URI = ("'self'",)
 CSP_FORM_ACTION = ("'self'",)
 CSP_FRAME_ANCESTORS = ("'none'",)  # Equivalent to X-Frame-Options: DENY
-
-# Security: Additional headers
-SECURE_REFERRER_POLICY = 'same-origin'
 
 # Security: File upload restrictions
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
@@ -167,13 +180,25 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-# Security: Logging for security events
+# Security: Password hashing
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
+
+# Security: Logging configuration for security events
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
             'style': '{',
         },
     },
@@ -184,6 +209,12 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'security.log'),
             'formatter': 'verbose',
         },
+        'https_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'https_redirects.log'),
+            'formatter': 'simple',
+        },
     },
     'loggers': {
         'django.security': {
@@ -191,5 +222,22 @@ LOGGING = {
             'level': 'WARNING',
             'propagate': True,
         },
+        'django.security.https': {
+            'handlers': ['https_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
+
+# Security: Environment-specific settings
+if DEBUG:
+    # Development-specific security relaxations
+    print("WARNING: Running in DEBUG mode. Security settings are relaxed.")
+    # Allow HTTP in development for easier testing
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    # Production security enforcement
+    print("SECURITY: Production mode enabled. All security settings are active.")
