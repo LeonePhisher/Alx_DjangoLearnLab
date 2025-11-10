@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: #dc3545; color: white; padding: 20px; border-radius: 5px; }
+        .user-list { margin-top: 20px; }
+        .user-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .admin-badge { background: #dc3545; color: white; padding: 2px 8px; border-radius: 3px; font-size: 12px; }
+        .librarian-badge { background: #007bff; color: white; padding: 2px 8px; border-radius: 3px; font-size: 12px; }
+        .member-badge { background: #28a745; color: white; padding: 2px 8px; border-radius: 3px; font-size: 12px; }
+        .nav { margin-bottom: 20px; }
+        .nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{% url 'relationship_app:list_books' %}">All Books</a>
+            <a href="{% url 'relationship_app:logout' %}">Logout</a>
+        </div>
+        
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <p>Welcome, {{ user.username }} (Admin)</p>
+        </div>
+
+        <div class="user-list">
+            <h2>User Management</h2>
+            {% for user_obj in users %}
+            <div class="user-card">
+                <h3>{{ user_obj.username }}</h3>
+                <p>Email: {{ user_obj.email|default:"Not provided" }}</p>
+                <p>Role: 
+                    {% if user_obj.profile.role == 'Admin' %}
+                        <span class="admin-badge">Admin</span>
+                    {% elif user_obj.profile.role == 'Librarian' %}
+                        <span class="librarian-badge">Librarian</span>
+                    {% else %}
+                        <span class="member-badge">Member</span>
+                    {% endif %}
+                </p>
+                <p>Joined: {{ user_obj.date_joined|date:"M d, Y" }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Book - Library Management</title>
+</head>
+<body>
+    <div style="max-width: 500px; margin: 0 auto; padding: 20px;">
+        <h1>Delete Book</h1>
+        <p>Are you sure you want to delete "{{ book.title }}"?</p>
+        
+        <!-- Security: CSRF Token for POST requests (Step 2) -->
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                Yes, Delete
+            </button>
+            <a href="{% url 'book_list' %}" style="margin-left: 10px;">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Member Dashboard</title>
+    <style>
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: #28a745; color: white; padding: 20px; border-radius: 5px; }
+        .book-list { margin-top: 20px; }
+        .book-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .nav { margin-bottom: 20px; }
+        .nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{% url 'relationship_app:list_books' %}">All Books</a>
+            <a href="{% url 'relationship_app:logout' %}">Logout</a>
+        </div>
+
+        <div class="header">
+            <h1>Member Dashboard</h1>
+            <p>Welcome, {{ user.username }} (Member)</p>
+        </div>
+
+        <div class="book-list">
+            <h2>Recommended Books</h2>
+            {% for book in books %}
+            <div class="book-card">
+                <h3>{{ book.title }}</h3>
+                <p>Author: {{ book.author.name }}</p>
+                <p>Published: {{ book.publication_year }}</p>
+            </div>
+            {% empty %}
+            <p>No books available at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
