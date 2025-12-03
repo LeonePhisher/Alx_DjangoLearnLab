@@ -10,6 +10,7 @@ from .views import (
 urlpatterns = [
     # List all posts
     path('', PostListView.as_view(), name='post_list'),
+     path('posts/<int:post_id>/comments/new/', CommentCreateView.as_view(), name='comment_create'),
 
     # View single post
     path('post/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
@@ -23,3 +24,4 @@ urlpatterns = [
     # Delete an existing post
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
 ]
+
