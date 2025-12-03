@@ -46,37 +46,23 @@ def profile_view(request):
     return render(request, 'blog/profile.html', {'pform': pform})
 
 # POSTS: List & Detail
-class PostListView(ListView):
-    model = Post
-    template_name = 'blog/post_list.html'
-    paginate_by = 10
-    context_object_name = 'posts'
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        q = self.request.GET.get('q', '')
-        tag = self.kwargs.get('tag', None)
-        if q:
-            qs = qs.filter(Q(title__icontains=q) | Q(content__icontains=q) | Q(tags__name__icontains=q)).distinct()
-        if tag:
-            qs = qs.filter(tags__name__iexact=tag)
-        return qs
-
-class PostDetailView(DetailView):
-    model = Post
-    template_name = 'blog/post_detail.html'
-    context_object_name = 'post'
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx['comment_form'] = CommentForm()
-        return ctx
-
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    form_class = PostForm
+    form_class = PostForm  # Use the custom form
     template_name = 'blog/post_form.html'
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    form_class = PostForm  # Use the custom form
+    template_name = 'blog/post_form.html'
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
     def form_valid(self, form):
         form.save(commit=True, author=self.request.user)
         return super().form_valid(form)
@@ -142,3 +128,4 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('post_detail', kwargs={'pk': self.get_object().post.pk})
+
