@@ -6,7 +6,6 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Q
-
 from .models import Post, Comment, Tag
 from .forms import UserRegisterForm, ProfileForm, PostForm, CommentForm
 
@@ -48,10 +47,10 @@ def profile_view(request):
 # POSTS: List & Detail
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    form_class = PostForm  # Use the custom form
+    form_class = PostForm
     template_name = 'blog/post_form.html'
 
-    def form_valid(self, form):
+ def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
@@ -78,6 +77,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+        
     def form_valid(self, form):
         form.save(commit=True, author=self.request.user)
         return super().form_valid(form)
@@ -143,5 +143,6 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('post_detail', kwargs={'pk': self.get_object().post.pk})
+
 
 
