@@ -14,10 +14,14 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['bio', 'avatar']
-
+        
 class PostForm(forms.ModelForm):
-    tags_field = forms.CharField(required=False, help_text='Comma-separated tags', max_length=200)
-
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'tags']
+        widgets = {
+            'tags': TagWidget(attrs={'placeholder': 'Add tags separated by commas'}),
+        }
     class Meta:
         model = Post
         fields = ['title', 'content']
@@ -53,3 +57,4 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'rows': 3}),
         }
+
