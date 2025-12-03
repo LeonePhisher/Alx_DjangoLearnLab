@@ -1,0 +1,9 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<h2>Posts tagged with "{{ view.kwargs.tag }}"</h2>
+{% for post in posts %}
+    <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a><br>
+{% empty %}
+    <p>No posts found for this tag.</p>
+{% endfor %}
+{% endblock %}
