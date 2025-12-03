@@ -104,6 +104,15 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         post = self.get_object()
         return self.request.user == post.author
 
+class TaggedPostListView(ListView):
+    model = Post
+    template_name = 'blog/tagged_posts.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        tag = self.kwargs.get('tag')
+        return Post.objects.filter(tags__name__iexact=tag)
+
 # COMMENTS
 @login_required
 class CommentCreateView(LoginRequiredMixin, CreateView):
@@ -143,6 +152,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('post_detail', kwargs={'pk': self.get_object().post.pk})
+
 
 
 
