@@ -1,0 +1,49 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block title %}{{ post.title }} - My Blog{% endblock %}
+{% block content %}
+<article>
+  <h2>{{ post.title }}</h2>
+  <p>By {{ post.author.username }} - {{ post.published_date }}</p>
+  <div>{{ post.content|linebreaks }}</div>
+
+  {% if user == post.author %}
+    <a href="{% url 'blog:post-update' post.pk %}">Edit</a> |
+    <a href="{% url 'blog:post-delete' post.pk %}">Delete</a>
+  {% endif %}
+
+  <h3>Tags</h3>
+  {% for tag in post.tags.all %}
+    <a href="{% url 'blog:posts-by-tag' tag.name %}">{{ tag.name }}</a>
+  {% empty %}
+    <p>No tags</p>
+  {% endfor %}
+</article>
+
+<section id="comments">
+  <h3>Comments</h3>
+  {% for comment in post.comments.all %}
+    <div>
+      <p>{{ comment.author.username }} at {{ comment.created_at }}:</p>
+      <p>{{ comment.content|linebreaks }}</p>
+      {% if user == comment.author %}
+        <a href="{% url 'blog:comment-update' comment.pk %}">Edit</a> |
+        <a href="{% url 'blog:comment-delete' comment.pk %}">Delete</a>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p>No comments yet.</p>
+  {% endfor %}
+
+  {% if user.is_authenticated %}
+    <h4>Add a comment</h4>
+    <form action="{% url 'blog:comment-create' post.pk %}" method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button type="submit">Post Comment</button>
+    </form>
+  {% else %}
+    <p><a href="{% url 'blog:login' %}">Log in</a> to comment.</p>
+  {% endif %}
+</section>
+{% endblock %}

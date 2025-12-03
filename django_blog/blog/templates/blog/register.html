@@ -1,0 +1,12 @@
+{% extends 'blog/base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<h2>Create account</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <h4>Profile</h4>
+  {{ profile_form.as_p }}
+  <button type="submit">Register</button>
+</form>
+{% endblock %}

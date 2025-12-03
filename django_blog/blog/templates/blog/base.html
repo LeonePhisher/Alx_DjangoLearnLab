@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Blog{% endblock %}</title>
+
+    {% load static %}
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'blog/css/styles.css' %}">
+</head>
+
+<body>
+
+    <!-- Navbar / Header -->
+    <header class="navbar">
+        <div class="container">
+            <h1 class="logo"><a href="/">My Django Blog</a></h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/admin/">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; {{ now|date:"Y" }} My Django Blog</p>
+    </footer>
+
+    <!-- Main JS -->
+    <script src="{% static 'blog/js/script.js' %}"></script>
+
+</body>
+</html>

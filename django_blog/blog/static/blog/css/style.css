@@ -1,0 +1,256 @@
+/* -----------------------------------------------------------
+   GENERAL LAYOUT
+----------------------------------------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* -----------------------------------------------------------
+   NAVBAR
+----------------------------------------------------------- */
+.navbar {
+    background: #222;
+    color: #fff;
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.navbar .logo a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navbar nav a {
+    margin-left: 20px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.navbar nav a:hover {
+    color: #fff;
+}
+
+/* -----------------------------------------------------------
+   PAGE CONTENT
+----------------------------------------------------------- */
+.content {
+    padding: 40px 0;
+}
+
+/* -----------------------------------------------------------
+   POST LIST PAGE
+----------------------------------------------------------- */
+.post-card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-left: 4px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+.post-card h2 a {
+    color: #222;
+    text-decoration: none;
+}
+
+.post-card p {
+    margin-top: 10px;
+}
+
+.btn-read {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: #444;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.btn-read:hover {
+    background: #000;
+}
+
+/* -----------------------------------------------------------
+   POST DETAIL PAGE
+----------------------------------------------------------- */
+.post-detail {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.07);
+}
+
+.post-detail h1 {
+    margin-bottom: 15px;
+}
+
+.post-meta {
+    margin-bottom: 25px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Edit/Delete buttons */
+.post-actions {
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 8px 14px;
+    text-decoration: none;
+    color: white;
+    border-radius: 4px;
+}
+
+.btn-edit {
+    background: #38a169;
+}
+
+.btn-edit:hover {
+    background: #2f855a;
+}
+
+.btn-delete {
+    background: #e53e3e;
+}
+
+.btn-delete:hover {
+    background: #c53030;
+}
+
+/* -----------------------------------------------------------
+   FORMS (Login, Register, Posts, Profile)
+----------------------------------------------------------- */
+.form-container {
+    background: white;
+    padding: 30px;
+    max-width: 500px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+form input,
+form textarea,
+form select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+form textarea {
+    height: 150px;
+    resize: vertical;
+}
+
+.form-btn {
+    width: 100%;
+    background: #333;
+    padding: 12px;
+    color: white;
+    border: none;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.form-btn:hover {
+    background: #000;
+}
+
+/* -----------------------------------------------------------
+   COMMENTS SECTION
+----------------------------------------------------------- */
+.comment-box {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 18px;
+    border-radius: 6px;
+    border-left: 4px solid #777;
+}
+
+.comment-meta {
+    font-size: 13px;
+    color: #777;
+}
+
+.new-comment-form {
+    margin-top: 30px;
+}
+
+.comment-actions a {
+    color: #0077cc;
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+.comment-actions a:hover {
+    color: #004c99;
+}
+
+/* -----------------------------------------------------------
+   PROFILE PAGE
+----------------------------------------------------------- */
+.profile-box {
+    background: #fff;
+    padding: 30px;
+    max-width: 600px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.profile-box h2 {
+    margin-bottom: 20px;
+}
+
+/* -----------------------------------------------------------
+   FOOTER
+----------------------------------------------------------- */
+.footer {
+    background: #222;
+    color: #ccc;
+    text-align: center;
+    padding: 15px;
+    margin-top: 40px;
+}
+
+/* -----------------------------------------------------------
+   RESPONSIVE STYLES
+----------------------------------------------------------- */
+@media (max-width: 768px) {
+    .navbar nav a {
+        margin-left: 10px;
+        font-size: 14px;
+    }
+
+    .post-card {
+        padding: 15px;
+    }
+
+    .post-detail {
+        padding: 20px;
+    }
+}
