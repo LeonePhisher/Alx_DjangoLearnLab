@@ -6,10 +6,11 @@
 <div class="form-container">
     <h2>{% if post %}Edit Post{% else %}Create New Post{% endif %}</h2>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="form-btn">{% if post %}Update{% else %}Create{% endif %}</button>
-    </form>
+   <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% if post %}Update{% else %}Create{% endif %}</button>
+</form>
+
 </div>
 {% endblock %}
