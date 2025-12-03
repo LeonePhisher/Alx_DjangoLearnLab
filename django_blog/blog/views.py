@@ -105,21 +105,23 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 # COMMENTS
 @login_required
-def add_comment(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            c = form.save(commit=False)
-            c.author = request.user
-            c.post = post
-            c.save()
-            messages.success(request, 'Comment added.')
-    return redirect('blog:post-detail', pk=pk)
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    fields = ['content']
+    template_name = 'blog/comment_form.html'
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = Post.objects.get(pk=self.kwargs['post_id'])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('post_detail', kwargs={'pk': self.kwargs['post_id']})
+
+# Update a comment
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
-    form_class = CommentForm
+    fields = ['content']
     template_name = 'blog/comment_form.html'
 
     def test_func(self):
@@ -127,8 +129,9 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user == comment.author
 
     def get_success_url(self):
-        return self.request.object.post.get_absolute_url()
+        return reverse('post_detail', kwargs={'pk': self.get_object().post.pk})
 
+# Delete a comment
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
     template_name = 'blog/comment_confirm_delete.html'
@@ -138,22 +141,4 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == comment.author
 
     def get_success_url(self):
-        return self.object.post.get_absolute_url()
-
-    class CommentCreateView(LoginRequiredMixin, CreateView):
-    model = Comment
-    fields = ['content']
-    template_name = 'blog/comment_form.html'
-
-    def form_valid(self, form):
-        # Assign the current user as the author
-        form.instance.author = self.request.user
-        # Link the comment to the correct post
-        post_id = self.kwargs['post_id']
-        form.instance.post = Post.objects.get(pk=post_id)
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        # Redirect back to the post detail page
-        return reverse('post_detail', kwargs={'pk': self.kwargs['post_id']})
-
+        return reverse('post_detail', kwargs={'pk': self.get_object().post.pk})
